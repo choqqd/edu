@@ -11,10 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/local")
 public class LocalTestServlet extends HttpServlet{
-	int number = 0;
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		int number = 0;
 		String str = req.getParameter("msg");
 		
 		resp.setContentType("text/html;charset=UTF-8");
