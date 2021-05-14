@@ -12,12 +12,35 @@ public class MemberDAO {
 	PreparedStatement psmt;
 	ResultSet rs;
 
-	MemberDAO() {
+	public MemberDAO() {
 		DataSource ds = DataSource.getIncetance();
 		conn = ds.getConnection();
 
 	}
 
+	public Member checkInfo(int id, String pwd) {
+		String sql = "select * from member where MEMBER_ID=? and MEMBER_PWD = ?";
+		Member mem = new Member();
+		try {
+			psmt = conn.prepareStatement(sql);
+			psmt.setInt(1, id);
+			psmt.setString(2, pwd);
+			rs = psmt.executeQuery();
+			
+			if(rs.next()) {
+				mem.setMemberAge(rs.getInt("member_age"));
+				mem.setMemberName(rs.getString("member_name"));
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+		
+		return mem;
+	}
+	
 	public List<Member> getMemberList() {
 		String sql = "select * from member order by 1";
 		List<Member> list = new ArrayList<Member>();
@@ -34,30 +57,9 @@ public class MemberDAO {
 				list.add(mem);
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			if (psmt != null) {
-				try {
-					psmt.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+			close();
 		}
 
 		return list;
@@ -78,20 +80,20 @@ public class MemberDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			if (psmt != null) {
-				try {
-					psmt.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+			close();
+		}
+	}
+	
+	public void close() {
+		try {
+			if (rs != null)
+				rs.close();
+			if (psmt != null)
+				psmt.close();
+			if (conn != null)
+				conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 }
