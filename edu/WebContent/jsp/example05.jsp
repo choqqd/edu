@@ -8,6 +8,11 @@
 </head>
 <body>
 <h1>Include 지시자 사용</h1>
-<%@ include file="Copy.jsp" %>
+<%=application.getAttribute("welcomeMsg").toString() %>
+<%
+	out.print("<h3>"+request.getAttribute("result").toString()+"</h3>");
+%>
+<jsp:include page="Copy.jsp"></jsp:include>
+<%--<%@ include file="Copy.jsp" %>--%>
 </body>
 </html>

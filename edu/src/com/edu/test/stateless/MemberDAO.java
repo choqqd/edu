@@ -7,17 +7,52 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 public class MemberDAO {
 	Connection conn;
 	PreparedStatement psmt;
 	ResultSet rs;
 
-	public MemberDAO() {
-		DataSource ds = DataSource.getIncetance();
-		conn = ds.getConnection();
-
+	   public MemberDAO() {
+//	      DataSource ds = DataSource.getInstance(); // DB 연결
+//	      conn = ds.getConnection();
+	      //Connection Poll 을 활용해서 Connection 객체 사용
+	      try {
+	         InitialContext ic = new InitialContext(); // 서버의 리소스를 관리하는 객체
+	         javax.sql.DataSource ds = (DataSource) ic.lookup("java:comp/env/jdbc/myoracle");
+	         conn = ds.getConnection();
+	      } catch (Exception e) {
+	         e.printStackTrace();
+	      }
+	   }
+//한건조회
+	public Member getMember(int id) {
+		String sql = "select * from member where MEMBER_ID=?";
+		Member mem = new Member();
+		try {
+			psmt = conn.prepareStatement(sql);
+			psmt.setInt(1, id);
+			rs = psmt.executeQuery();
+			
+			if(rs.next()) {
+				mem.setMemberId(rs.getInt("member_id"));
+				mem.setMemberPwd(rs.getString("member_pwd"));
+				mem.setMemberAge(rs.getInt("member_age"));
+				mem.setMemberName(rs.getString("member_name"));
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+		
+		return mem;
 	}
-
+	
 	public Member checkInfo(int id, String pwd) {
 		String sql = "select * from member where MEMBER_ID=? and MEMBER_PWD = ?";
 		Member mem = new Member();
@@ -28,6 +63,8 @@ public class MemberDAO {
 			rs = psmt.executeQuery();
 			
 			if(rs.next()) {
+				mem.setMemberId(rs.getInt("member_id"));
+				mem.setMemberPwd(rs.getString("member_pwd"));
 				mem.setMemberAge(rs.getInt("member_age"));
 				mem.setMemberName(rs.getString("member_name"));
 			}

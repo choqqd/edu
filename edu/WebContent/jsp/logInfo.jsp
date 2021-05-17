@@ -19,12 +19,18 @@
 	mem = dao.checkInfo(id, pwd);
 	int age = mem.getMemberAge();
 	String name = mem.getMemberName();
-	if(name==null){
-		out.print("사용자정보가 없습니다.");
-	}else{
-		%><h3>name: <%=name %></h3><br>
-		<h3>Age: <%=age %></h3><%
-	}
+	if(request.getMethod().equals("POST")){
+		if(mem==null||mem.getMemberId() == 0){
+			out.print("<h3>사용자정보가 없습니다.</h3>");
+		}else{
+			session.setAttribute("info", mem);
+			out.print("<h3>이름: "+mem.getMemberName()+"나이: "+mem.getMemberAge()+" </h3><br>");
+		}
+	 // get -> 로그아웃
+	 }else{
+		 session.invalidate();
+		 out.print("로그아웃됨");
+	 }
 %>
 
 </body>
